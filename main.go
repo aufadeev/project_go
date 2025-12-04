@@ -103,38 +103,39 @@ func fetchAndCheck(ctx context.Context, client *http.Client) error {
 		return fmt.Errorf("invalid used network bandwidth: %v", err)
 	}
 
-	// Проверка Load Average
-	if loadAvg > 30 {
-		fmt.Printf("Load Average is too high: %.2f\n", loadAvg)
-	}
+	// Load Average
+if loadAvg > 30 {
+    fmt.Printf("Load Average is too high: %.0f\n", loadAvg)
+}
 
-	// Проверка использования памяти
-	if totalMem > 0 {
-		memUsagePercent := (usedMem / totalMem) * 100
-		if memUsagePercent > 80 {
-			fmt.Printf("Memory usage too high: %.2f%%\n", memUsagePercent)
-		}
-	}
+// Память
+if totalMem > 0 {
+    memUsagePercent := (usedMem / totalMem) * 100
+    if memUsagePercent > 80 {
+        fmt.Printf("Memory usage too high: %.0f%%\n", memUsagePercent)
+    }
+}
 
-	// Проверка дискового пространства
-	if totalDisk > 0 {
-		freeDiskBytes := totalDisk - usedDisk
-		freeDiskMB := freeDiskBytes / (1024 * 1024)
-		diskUsagePercent := (usedDisk / totalDisk) * 100
-		if diskUsagePercent > 90 {
-			fmt.Printf("Free disk space is too low: %.0f Mb left\n", freeDiskMB)
-		}
-	}
+// Диск
+if totalDisk > 0 {
+    freeDiskBytes := totalDisk - usedDisk
+    freeDiskMB := freeDiskBytes / (1024 * 1024) // здесь правильно 1024*1024
+    diskUsagePercent := (usedDisk / totalDisk) * 100
+    if diskUsagePercent > 90 {
+        fmt.Printf("Free disk space is too low: %.0f Mb left\n", freeDiskMB)
+    }
+}
 
-	// Проверка сетевой загрузки
-	if totalNet > 0 {
-		netUsagePercent := (usedNet / totalNet) * 100
-		if netUsagePercent > 90 {
-			freeBandwidthBps := totalNet - usedNet
-			freeBandwidthMbitps := (freeBandwidthBps * 8) / (1024 * 1024)
-			fmt.Printf("Network bandwidth usage high: %.2f Mbit/s available\n", freeBandwidthMbitps)
-		}
-	}
+// Сеть
+if totalNet > 0 {
+    netUsagePercent := (usedNet / totalNet) * 100
+    if netUsagePercent > 90 {
+        freeBandwidthBps := totalNet - usedNet
+        // Важно: для сетевых скоростей используем 1000, а не 1024
+        freeBandwidthMbitps := (freeBandwidthBps) / (1000 * 1000)
+        fmt.Printf("Network bandwidth usage high: %.0f Mbit/s available\n", freeBandwidthMbitps)
+    }
+}
 
 	return nil
 }

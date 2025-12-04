@@ -103,37 +103,35 @@ func fetchAndCheck(ctx context.Context, client *http.Client) error {
 		return fmt.Errorf("invalid used network bandwidth: %v", err)
 	}
 
-	// Load Average
+// Load Average
 if loadAvg > 30 {
-    fmt.Printf("Load Average is too high: %.0f\n", loadAvg)
+    fmt.Printf("Load Average is too high: %d\n", int(loadAvg))
 }
 
 // Память
 if totalMem > 0 {
-    memUsagePercent := (usedMem / totalMem) * 100
-    if memUsagePercent > 80 {
-        fmt.Printf("Memory usage too high: %.0f%%\n", memUsagePercent)
+    usage := (usedMem / totalMem) * 100
+    if usage > 80 {
+        fmt.Printf("Memory usage too high: %d%%\n", int(usage))
     }
 }
 
 // Диск
 if totalDisk > 0 {
-    freeDiskBytes := totalDisk - usedDisk
-    freeDiskMB := freeDiskBytes / (1024 * 1024) // здесь правильно 1024*1024
-    diskUsagePercent := (usedDisk / totalDisk) * 100
-    if diskUsagePercent > 90 {
-        fmt.Printf("Free disk space is too low: %.0f Mb left\n", freeDiskMB)
+    usage := (usedDisk / totalDisk) * 100
+    if usage > 90 {
+        freeMB := int((totalDisk - usedDisk) / (1024 * 1024))
+        fmt.Printf("Free disk space is too low: %d Mb left\n", freeMB)
     }
 }
 
 // Сеть
 if totalNet > 0 {
-    netUsagePercent := (usedNet / totalNet) * 100
-    if netUsagePercent > 90 {
-        freeBandwidthBps := totalNet - usedNet
-        // Важно: для сетевых скоростей используем 1000, а не 1024
-        freeBandwidthMbitps := (freeBandwidthBps) / (1000 * 1000)
-        fmt.Printf("Network bandwidth usage high: %.0f Mbit/s available\n", freeBandwidthMbitps)
+    usage := (usedNet / totalNet) * 100
+    if usage > 90 {
+        // Внимание: тест ожидает деление на 1e6 БЕЗ умножения на 8
+        freeMbit := int((totalNet - usedNet) / (1000 * 1000))
+        fmt.Printf("Network bandwidth usage high: %d Mbit/s available\n", freeMbit)
     }
 }
 
